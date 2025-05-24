@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>After Dark Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .game-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .game-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .game-description {
+            margin-bottom: 20px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .big-button {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .big-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .result-box {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .game-section {
+                padding: 20px;
+            }
+            
+            .big-button {
+                padding: 12px 25px;
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 After Dark Games 🎲</h1>
+        <p class="subtitle">Silly games for quiet evenings at home</p>
+
+        <!-- Trivia Questions Game -->
+        <div class="game-section">
+            <h2 class="game-title">🤔 Silly Trivia Questions</h2>
+            <p class="game-description">Random weird questions to get you both laughing and sharing ridiculous stories!</p>
+            <button class="big-button" onclick="getRandomQuestion()">Get Random Question</button>
+            <div id="questionResult" class="result-box hidden"></div>
+        </div>
+
+        <!-- List Making Game -->
+        <div class="game-section">
+            <h2 class="game-title">📝 Speed Lists</h2>
+            <p class="game-description">See who can write down more items in each category. Set a 2-minute timer!</p>
+            <button class="big-button" onclick="getRandomListChallenge()">Get List Challenge</button>
+            <div id="listResult" class="result-box hidden"></div>
+        </div>
+
+        <!-- Would You Rather Game -->
+        <div class="game-section">
+            <h2 class="game-title">🤷 Ridiculous Would You Rather</h2>
+            <p class="game-description">Absurd choices that will make you question everything!</p>
+            <button class="big-button" onclick="getRandomWouldYouRather()">Would You Rather...</button>
+            <div id="wouldYouRatherResult" class="result-box hidden"></div>
+        </div>
+
+        <!-- Story Prompts Game -->
+        <div class="game-section">
+            <h2 class="game-title">📚 Weird Story Starters</h2>
+            <p class="game-description">Take turns telling 2-minute stories based on these bizarre prompts!</p>
+            <button class="big-button" onclick="getRandomStoryPrompt()">Get Story Prompt</button>
+            <div id="storyResult" class="result-box hidden"></div>
+        </div>
+
+        <!-- Quick Fire Game -->
+        <div class="game-section">
+            <h2 class="game-title">⚡ Quick Fire Round</h2>
+            <p class="game-description">Rapid-fire silly questions! Answer as fast as you can!</p>
+            <button class="big-button" onclick="getRandomQuickFire()">Quick Fire!</button>
+            <div id="quickFireResult" class="result-box hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // Load games data
+        let gamesData = {};
+
+        // Fetch the games data
+        fetch('games.json')
+            .then(response => response.json())
+            .then(data => {
+                gamesData = data;
+            })
+            .catch(error => {
+                console.error('Error loading games data:', error);
+                // Fallback data in case JSON doesn't load
+                gamesData = {
+                    "triviaQuestions": [
+                        "What's the weirdest thing you've ever found in your belly button?",
+                        "If you had to get a face tattoo of a vegetable, which vegetable and where?",
+                        "You're trapped in an elevator with a mariachi band - what song do you request?"
+                    ],
+                    "listChallenges": [
+                        "Types of cheese you can name",
+                        "Things that are sticky",
+                        "Words that rhyme with 'purple'"
+                    ],
+                    "wouldYouRather": [
+                        "Would you rather have fingers as long as legs or legs as short as fingers?",
+                        "Would you rather sweat maple syrup or cry glitter?",
+                        "Would you rather have a rewind button or a pause button for your life?"
+                    ],
+                    "storyPrompts": [
+                        "You wake up and discover your pet can suddenly talk, but they only complain about your life choices.",
+                        "You're a professional food critic for pet food.",
+                        "You discover your reflection has been living its own life in mirrors."
+                    ],
+                    "quickFire": [
+                        "Favorite weird smell?",
+                        "Most useless superpower you can think of?",
+                        "What would you name a pet rock?"
+                    ]
+                };
+            });
+
+        function getRandomItem(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        function showResult(elementId, text) {
+            const element = document.getElementById(elementId);
+            element.textContent = text;
+            element.classList.remove('hidden');
+        }
+
+        function getRandomQuestion() {
+            const question = getRandomItem(gamesData.triviaQuestions || []);
+            showResult('questionResult', question);
+        }
+
+        function getRandomListChallenge() {
+            const challenge = getRandomItem(gamesData.listChallenges || []);
+            showResult('listResult', `List as many as you can: ${challenge}`);
+        }
+
+        function getRandomWouldYouRather() {
+            const question = getRandomItem(gamesData.wouldYouRather || []);
+            showResult('wouldYouRatherResult', question);
+        }
+
+        function getRandomStoryPrompt() {
+            const prompt = getRandomItem(gamesData.storyPrompts || []);
+            showResult('storyResult', prompt);
+        }
+
+        function getRandomQuickFire() {
+            const question = getRandomItem(gamesData.quickFire || []);
+            showResult('quickFireResult', question);
+        }
+    </script>
+</body>
+</html>
